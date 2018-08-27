@@ -42,7 +42,7 @@ namespace RabbitAdapter
 
         {
 
-            MessageBox.Show(msg, "Cообщение компоненты RabbitAdapter", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            MessageBox.Show(msg, "Cообщение компоненты RabbitAdapter!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
         }
 
