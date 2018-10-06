@@ -45,7 +45,7 @@ namespace RabbitAdapter
 
     [Guid("BEB7F94E-522F-488C-9927-8395AFDF51AC"), ClassInterface(ClassInterfaceType.None), ComSourceInterfaces(typeof(IRabbitAdapterEvents))]
 
-    public class RabbitAdapter : IRabbitAdapter
+    public class AMQPWrapper : IRabbitAdapter
 
     {
 
@@ -55,7 +55,7 @@ namespace RabbitAdapter
 
         IConnection connection;
         
-        public RabbitAdapter()
+        public AMQPWrapper()
         {
             
         }

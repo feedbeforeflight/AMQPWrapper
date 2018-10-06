@@ -7,8 +7,8 @@
     <ProjectGuid>{76C851EE-5820-4DEB-A15C-BB97883A1C3B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RabbitAdapter</RootNamespace>
-    <AssemblyName>RabbitAdapter</AssemblyName>
+    <RootNamespace>AMQPWrapper</RootNamespace>
+    <AssemblyName>AMQPWrapper</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -34,7 +34,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>RabbitAdapter.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>AMQPWrapper.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Diagnostics.Tracing.EventSource, Version=2.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -54,12 +54,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RabbitAdapter.cs" />
+    <Compile Include="AMQPWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="RabbitAdapter.snk" />
+    <None Include="AMQPWrapper.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
