@@ -16,6 +16,7 @@ using OneC.ExternalComponents;
 public class AMQPWrapper : ExtComponentBase
 {
     private int MyNumber;
+    private string LastError;
     IConnection connection;
     IModel model;
 
@@ -32,15 +33,17 @@ public class AMQPWrapper : ExtComponentBase
     }
 
     [Export1c]
-    public void DoSomething(string msg)
+    public string DoSomething(string msg)
     {
+        return msg;
+        
         //            MessageBox.Show(msg, "Cообщение компоненты RabbitAdapter", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        int num = 0;
-        TimerCallback tm = new TimerCallback(Count);
+        //int num = 0;
+        //TimerCallback tm = new TimerCallback(Count);
         // создаем таймер
-        System.Threading.Timer timer = new System.Threading.Timer(tm, num, 0, 2000);
+        //System.Threading.Timer timer = new System.Threading.Timer(tm, num, 0, 2000);
 
-        MessageBox.Show(msg, "Cообщение компоненты RabbitAdapter", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        //MessageBox.Show(msg, "Cообщение компоненты RabbitAdapter", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
     }
 
     public void Count(object obj)
@@ -48,14 +51,25 @@ public class AMQPWrapper : ExtComponentBase
         Async.ExternalEvent("AddIn.AMQPWrapper", "SampleEvent", "Hi from external component! " + MyNumber.ToString());
         MyNumber++;
     }
+    
+    [Export1c]
+    public string GetLastError()
+    {
+        return LastError;
+    }
 
     [Export1c]
     public bool Connect(string host, string port, string login, string password, string vhost)
     {
         //MessageBox.Show("connect method call", "Cообщение компоненты RabbitAdapter", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-
-        connection = GetRabbitConnection(host, port, login, password, vhost);
-
+        try{
+            connection = GetRabbitConnection(host, port, login, password, vhost);
+        }
+        catch {
+            LastError = "error getting rabbit connection";
+            return false;
+        }
+        
         return true;
     }
 
@@ -77,7 +91,7 @@ public class AMQPWrapper : ExtComponentBase
     [Export1c]
     public bool Send(string exchangeName, string queueName, string routingKey, string Message)
     {
-        SendMessage(exchangeName, routingKey, Message);
+        RabbitSendMessage(exchangeName, routingKey, Message);
 
         return true;
     }
@@ -85,7 +99,19 @@ public class AMQPWrapper : ExtComponentBase
     [Export1c]
     public string Receive(string exchangeName, string queueName, string routingKey)
     {
-        return ReceiveIndividualMessage(exchangeName, queueName, routingKey);
+        return RabbitReceiveIndividualMessage(exchangeName, queueName, routingKey);
+    }
+
+    [Export1c]
+    public void DeclareExchange(string exchangeName)
+    {
+        RabbitDeclareExchange(exchangeName);
+    }
+
+    [Export1c]
+    public void BindQueue(string exchangeName, string queueName, string routingKey)
+    {
+        RabbitBindQueue(exchangeName, queueName, routingKey);
     }
 
     #region "rabbit interface"
@@ -114,7 +140,7 @@ public class AMQPWrapper : ExtComponentBase
 //        model.QueueBind(queueName, exchangeName, routingKey, null);
     }
 
-    private void DeclareExchange(string exchangeName)
+    private void RabbitDeclareExchange(string exchangeName)
     {
         if (model != null)
         {
@@ -122,28 +148,29 @@ public class AMQPWrapper : ExtComponentBase
         }
     }
 
-    private void BindQueue(string exchangeName, string queueName, string routingKey)
+    private void RabbitBindQueue(string exchangeName, string queueName, string routingKey)
     {
         if (model != null)
         {
+            model.ExchangeDeclare(exchangeName, ExchangeType.Direct);
             model.QueueDeclare(queueName, false, false, false, null);
             model.QueueBind(queueName, exchangeName, routingKey, null);
         }
     }
 
-    private void SendMessage(string exchangeName, string routingKey, string Message)
+    private void RabbitSendMessage(string exchangeName, string routingKey, string Message)
     {
         GetRabbitChannel();
-        DeclareExchange(exchangeName);
+        RabbitDeclareExchange(exchangeName);
         byte[] messageBodyBytes = Encoding.UTF8.GetBytes(Message);
         model.BasicPublish(exchangeName, routingKey, null, messageBodyBytes);
     }
 
-    private string ReceiveIndividualMessage(string exchangeName, string queueName, string routingKey)
+    private string RabbitReceiveIndividualMessage(string exchangeName, string queueName, string routingKey)
     {
         string originalMessage = "";
         GetRabbitChannel();
-        BindQueue(exchangeName, queueName, routingKey);
+        RabbitBindQueue(exchangeName, queueName, routingKey);
         BasicGetResult result = model.BasicGet(queueName, true);
         if (result == null)
         {
