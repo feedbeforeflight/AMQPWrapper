@@ -105,12 +105,14 @@ public class AMQPWrapper : ExtComponentBase
     [Export1c]
     public void DeclareExchange(string exchangeName)
     {
+        GetRabbitChannel();
         RabbitDeclareExchange(exchangeName);
     }
 
     [Export1c]
     public void BindQueue(string exchangeName, string queueName, string routingKey)
     {
+        GetRabbitChannel();
         RabbitBindQueue(exchangeName, queueName, routingKey);
     }
 
