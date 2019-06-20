@@ -89,7 +89,7 @@ public class AMQPWrapper : ExtComponentBase
     }
 
     [Export1c]
-    public bool Send(string exchangeName, string queueName, string routingKey, string Message)
+    public bool Send(string exchangeName, string routingKey, string Message)
     {
         RabbitSendMessage(exchangeName, routingKey, Message);
 
@@ -97,9 +97,9 @@ public class AMQPWrapper : ExtComponentBase
     }
 
     [Export1c]
-    public string Receive(string exchangeName, string queueName, string routingKey)
+    public string Receive(string queueName)
     {
-        return RabbitReceiveIndividualMessage(exchangeName, queueName, routingKey);
+        return RabbitReceiveIndividualMessage(queueName);
     }
 
     [Export1c]
@@ -168,11 +168,11 @@ public class AMQPWrapper : ExtComponentBase
         model.BasicPublish(exchangeName, routingKey, null, messageBodyBytes);
     }
 
-    private string RabbitReceiveIndividualMessage(string exchangeName, string queueName, string routingKey)
+    private string RabbitReceiveIndividualMessage(string queueName)
     {
         string originalMessage = "";
         GetRabbitChannel();
-        RabbitBindQueue(exchangeName, queueName, routingKey);
+        //RabbitBindQueue(exchangeName, queueName, routingKey);
         BasicGetResult result = model.BasicGet(queueName, true);
         if (result == null)
         {
